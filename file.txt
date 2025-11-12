@@ -1,4 +1,2 @@
-
+first version of get next line
 e
-d
-ddd
