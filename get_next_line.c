@@ -1,36 +1,87 @@
 #include "get_next_line.h"
 
-int count_total_bytes(/*int fd, */char *fileName)
-{
-    int fd = open(fileName, O_RDONLY);
 
-    int total_bytes = 0;
-    int bytes_read;
-    char buff[1024];
-    
-    while ((bytes_read = read(fd, buff, sizeof(buff))) > 0)
-        total_bytes += bytes_read;
-    printf("Total bytes of file: %d\n", total_bytes);
-    return (total_bytes);
+int tem_new_line(char *str)
+{
+    int i;
+
+    i = 0;
+    if (!str)
+        return (0);
+    while(str[i])
+    {
+        if(str[i] == '\n')
+            return(1);
+        i++;
+    }
+    return(0);
 }
 
 
-char *get_next_line(int fd, char *fileName)
+
+char *ler_ate_newline(int fd, char *resto)
 {
     char *buffer;
-    int len = 0;
-    int total_bytes = count_total_bytes(/*fd, */fileName);
-    int len_max;
-    
-    buffer = malloc(total_bytes + 1);
+    int bytes_lidos;
+
+    buffer = malloc(BUFFER_SIZE + 1);
     if(!buffer)
-        return(NULL);
-    len_max = read(fd, buffer, total_bytes);
-    while(buffer[len] != '\n' && len < total_bytes)
-        len++;
-    buffer[len] = '\0';    
-    return (buffer);
+          return (NULL);
+    while(!tem_new_line(resto))
+    {
+        bytes_lidos = read(fd, buffer, BUFFER_SIZE);
+        if (bytes_lidos <= 0)
+            break;
+        buffer[bytes_lidos] = '\0';
+        resto = ft_strjoin(resto, buffer);
+    }
+
+    //free(buffer);
+    return (resto);
+
 }
+
+
+// extrair linha
+// contar até \n ou fim da string
+// allocar mémoria para linha + \n + \0
+// copiar conteudo
+// colocar \0 no final e retornar linha
+
+
+char *extrair_linha(char *resto)
+{
+    int i;
+    int j;
+    char *linha;
+
+    i = 0;
+    while(resto[i] && resto[i] != '\n')
+        i++;
+    linha = malloc(sizeof(char) * (i + 2));
+    j = 0;
+    ft_strlcpy(linha, resto, (size_t)i + 2);
+    return (linha);
+}
+
+
+
+char *get_next_line(int fd)
+{
+    static char *resto;
+    char *linha;
+
+    resto = ler_ate_newline(fd, resto);
+
+    if(!resto)
+        return (NULL);
+
+    linha = extrair_linha(resto);
+    return (linha);
+}
+
+
+
 
 int main(void)
 {
@@ -38,5 +89,7 @@ int main(void)
 
     int fd = open(fileName, O_RDWR);
    
-    printf("%s", get_next_line(fd, fileName));
+    printf("%s", get_next_line(fd));
 }
+
+
