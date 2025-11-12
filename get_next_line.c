@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-int count_total_bytes(char *fileName)
+int count_total_bytes(/*int fd, */char *fileName)
 {
     int fd = open(fileName, O_RDONLY);
 
@@ -14,33 +14,21 @@ int count_total_bytes(char *fileName)
     return (total_bytes);
 }
 
-int linelen(char *fileName, int total_bytes, char *buffer)
-{
-    int fd = open(fileName, O_RDONLY);
-    int len;
-    int len_max;
-
-    len = 0;
-    len_max = read(fd, buffer, total_bytes);
-    while(buffer[len] != '\n' && len < total_bytes)
-        len++;
-    buffer[len] = '\0';
-    // free(buffer);
-    printf("LINE LEN: %d", len);
-    return(len);
-}
 
 char *get_next_line(int fd, char *fileName)
 {
     char *buffer;
-    int total_bytes = count_total_bytes(fileName);
+    int len = 0;
+    int total_bytes = count_total_bytes(/*fd, */fileName);
+    int len_max;
     
     buffer = malloc(total_bytes + 1);
     if(!buffer)
         return(NULL);
-    linelen(fileName, total_bytes, buffer);
-    
-    printf("\n%s", buffer);
+    len_max = read(fd, buffer, total_bytes);
+    while(buffer[len] != '\n' && len < total_bytes)
+        len++;
+    buffer[len] = '\0';    
     return (buffer);
 }
 
@@ -49,7 +37,6 @@ int main(void)
     char* fileName = "file.txt";
 
     int fd = open(fileName, O_RDWR);
-
-    
-    get_next_line(fd, fileName);
+   
+    printf("%s", get_next_line(fd, fileName));
 }
