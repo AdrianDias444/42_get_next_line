@@ -26,7 +26,8 @@ char *ler_ate_newline(int fd, char *resto)
 
     buffer = malloc(BUFFER_SIZE + 1);
     if(!buffer)
-          return (NULL);
+        return (NULL);
+        
     while(!tem_new_line(resto))
     {
         bytes_lidos = read(fd, buffer, BUFFER_SIZE);
@@ -36,7 +37,8 @@ char *ler_ate_newline(int fd, char *resto)
         resto = ft_strjoin(resto, buffer);
     }
 
-    //free(buffer);
+    // free(buffer);
+    // printf("resto: %s, ", resto);
     return (resto);
 
 }
@@ -52,16 +54,44 @@ char *ler_ate_newline(int fd, char *resto)
 char *extrair_linha(char *resto)
 {
     int i;
-    int j;
     char *linha;
 
     i = 0;
     while(resto[i] && resto[i] != '\n')
         i++;
     linha = malloc(sizeof(char) * (i + 2));
-    j = 0;
     ft_strlcpy(linha, resto, (size_t)i + 2);
     return (linha);
+}
+
+
+// percorrer resto ate \n + 1 (se houver \n)
+// se nao houver mais nada, liberar memoria e retornar NULL
+// strlcpy de tudo para frente para um novo resto
+// free(resto), linha antiga
+// return(new_resto)
+
+char *atualizar_resto(char *resto)
+{
+    int i;
+    int j;
+    char *new_resto;
+
+    i = 0;
+    while(resto[i] && resto[i - 1] != '\n')
+        i++;
+    if (!resto[i])
+    {
+        free (resto);
+        return (NULL);
+    }
+    j = i;
+    while (resto[j])
+        j++;
+    new_resto = malloc(sizeof(char) * ((j - i) + 1));
+    ft_strlcpy(new_resto, resto + i, (j - i) + 1);
+    free (resto);
+    return (new_resto);
 }
 
 
@@ -72,24 +102,27 @@ char *get_next_line(int fd)
     char *linha;
 
     resto = ler_ate_newline(fd, resto);
-
+    
     if(!resto)
         return (NULL);
 
     linha = extrair_linha(resto);
+    // printf("extracao: %s/", linha);
+    resto = atualizar_resto(resto);
+
     return (linha);
 }
 
+// int main(void)
+// {
+//     char* fileName = "file.txt";
 
-
-
-int main(void)
-{
-    char* fileName = "file.txt";
-
-    int fd = open(fileName, O_RDWR);
+//     int fd = open(fileName, O_RDWR);
    
-    printf("%s", get_next_line(fd));
-}
-
+//     printf("%s", get_next_line(fd));
+//     printf("%s", get_next_line(fd));
+//     printf("%s", get_next_line(fd));
+//     printf("%s", get_next_line(fd));
+//     // free(get_next_line(fd));
+// }
 

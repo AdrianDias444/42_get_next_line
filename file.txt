@@ -1,4 +1,4 @@
-my own first version of get next line
+first version of get next line
 e
 sadlkdsa
 asdas

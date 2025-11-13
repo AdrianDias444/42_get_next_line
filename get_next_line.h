@@ -7,9 +7,8 @@
 #include <fcntl.h>
 #include <string.h>
 
-char	*ft_strdup(const char *s);
+char *get_next_line(int fd);
 char    *ft_strjoin(char const *s1, char const *s2);
 size_t  ft_strlcpy(char *dst, const char *src, size_t size);
-void	*ft_memcpy(void *dest, const void *src, size_t n);
 size_t  ft_strlen(const char *s);
 #endif
